@@ -1,0 +1,2 @@
+JSONFileDir = "/run/dump1090-fa"
+ScanPeriod = 1 # in seconds
