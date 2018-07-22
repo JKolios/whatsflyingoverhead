@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"time"
 
 	"github.com/JKolios/whatsflyingoverhead/conf"
 	"github.com/JKolios/whatsflyingoverhead/dump1090-fa"
+	"github.com/fsnotify/fsnotify"
 )
 
 func main() {
@@ -18,15 +18,26 @@ func main() {
 	}
 	log.Printf("%+v", *config)
 
-	scanTicker := time.NewTicker(config.ScanPeriod)
+	var fileWatcher *fsnotify.Watcher
+	if fileWatcher, err = fsnotify.NewWatcher(); err != nil {
+		log.Fatalf("Error creating filesystem watcher: %v", err.Error())
+	}
+
+	aircraftFilePath := config.JSONFileDir + "/aircraft.json"
+
+	if err = fileWatcher.Add(aircraftFilePath); err != nil {
+		log.Fatalf("Error watching aircraft file: %v", err.Error())
+	}
+	defer fileWatcher.Close()
+
 	waitChan := make(chan int)
 
 	go func() {
 
 		for {
 			select {
-			case <-scanTicker.C:
-				log.Println("Tick")
+			case <-fileWatcher.Events:
+				log.Println("FS event")
 				aircraftFile, err := os.Open(config.JSONFileDir + "/aircraft.json")
 				defer aircraftFile.Close()
 				if err != nil {
@@ -39,6 +50,12 @@ func main() {
 					log.Printf("Error unmarshaling the aircraft file: %v\n", err.Error())
 					waitChan <- 0
 					return
+				}
+
+				for _, aircraft := range visibleAircraftFile.Aircraft {
+					if aircraft.HasCoordinates() {
+						log.Printf("Flight: %v, Distance: %v\n", aircraft.Flight, aircraft.Distance(config.ReceiverLat, config.ReceiverLon, config.ReceiverHeight))
+					}
 				}
 
 				log.Printf("%+v\n", visibleAircraftFile)

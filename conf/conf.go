@@ -7,8 +7,11 @@ import (
 )
 
 type Config struct {
-	JSONFileDir string
-	ScanPeriod  time.Duration
+	JSONFileDir    string
+	ScanPeriod     time.Duration
+	ReceiverLat    float64
+	ReceiverLon    float64
+	ReceiverHeight float64
 }
 
 func LoadConfig() (*Config, error) {
