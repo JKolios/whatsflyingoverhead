@@ -1,14 +1,11 @@
 package conf
 
 import (
-	"time"
-
 	toml "github.com/pelletier/go-toml"
 )
 
 type Config struct {
 	JSONFileDir    string
-	ScanPeriod     time.Duration
 	ReceiverLat    float64
 	ReceiverLon    float64
 	ReceiverHeight float64
@@ -26,6 +23,5 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	conf.ScanPeriod = conf.ScanPeriod * time.Second
 	return &conf, nil
 }

@@ -2,9 +2,9 @@
 	"now": 1532196833.0,
 	"messages": 32973,
 	"aircraft": [{
-			"hex": "4691c5",
-			"squawk": "2036",
-			"flight": "AEE724  ",
+			"hex": "4691c5122123451",
+			"squawk": "20361",
+      "flight": "AEE7255",
 			"lat": 38.023270,
 			"lon": 24.038261,
 			"nucp": 7,
@@ -19,49 +19,6 @@
 			"messages": 154,
 			"seen": 0.1,
 			"rssi": -16.5
-		},
-		{
-			"hex": "46bc44",
-			"squawk": "7071",
-			"flight": "OAL052  ",
-			"altitude": 8675,
-			"mlat": [],
-			"tisb": [],
-			"messages": 447,
-			"seen": 1.5,
-			"rssi": -22.1
-		},
-		{
-			"hex": "48414d",
-			"mlat": [],
-			"tisb": [],
-			"messages": 228,
-			"seen": 202.5,
-			"rssi": -22.3
-		},
-		{
-			"hex": "4690eb",
-			"mlat": [],
-			"tisb": [],
-			"messages": 173,
-			"seen": 216.2,
-			"rssi": -22.9
-		},
-		{
-			"hex": "345205",
-			"mlat": [],
-			"tisb": [],
-			"messages": 140,
-			"seen": 287.0,
-			"rssi": -22.9
-		},
-		{
-			"hex": "4691c8",
-			"mlat": [],
-			"tisb": [],
-			"messages": 507,
-			"seen": 268.0,
-			"rssi": -22.4
 		}
 	]
 }

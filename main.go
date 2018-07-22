@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
-	"os"
 
 	"github.com/JKolios/whatsflyingoverhead/conf"
 	"github.com/JKolios/whatsflyingoverhead/dump1090-fa"
@@ -16,7 +16,6 @@ func main() {
 	if config, err = conf.LoadConfig(); err != nil {
 		log.Fatalf("Error loading configuration: %v", err.Error())
 	}
-	log.Printf("%+v", *config)
 
 	var fileWatcher *fsnotify.Watcher
 	if fileWatcher, err = fsnotify.NewWatcher(); err != nil {
@@ -33,20 +32,24 @@ func main() {
 	waitChan := make(chan int)
 
 	go func() {
-
 		for {
 			select {
-			case <-fileWatcher.Events:
-				log.Println("FS event")
-				aircraftFile, err := os.Open(config.JSONFileDir + "/aircraft.json")
-				defer aircraftFile.Close()
+			case event := <-fileWatcher.Events:
+				log.Printf("FS event: %+v\n", event)
+
+				if event.Op != fsnotify.Write {
+					continue
+				}
+
+				aircraftFileBytes, err := ioutil.ReadFile(config.JSONFileDir + "/aircraft.json")
 				if err != nil {
 					log.Printf("Error reading the aircraft file: %v\n", err.Error())
 					waitChan <- 0
+					return
 				}
-				jsonDecoder := json.NewDecoder(aircraftFile)
+
 				var visibleAircraftFile dump1090fa.AircraftFile
-				if err = jsonDecoder.Decode(&visibleAircraftFile); err != nil {
+				if err = json.Unmarshal(aircraftFileBytes, &visibleAircraftFile); err != nil {
 					log.Printf("Error unmarshaling the aircraft file: %v\n", err.Error())
 					waitChan <- 0
 					return
@@ -57,9 +60,16 @@ func main() {
 						log.Printf("Flight: %v, Distance: %v\n", aircraft.Flight, aircraft.Distance(config.ReceiverLat, config.ReceiverLon, config.ReceiverHeight))
 					}
 				}
+			}
+		}
+	}()
 
-				log.Printf("%+v\n", visibleAircraftFile)
-
+	go func() {
+		var err error
+		for {
+			select {
+			case err = <-fileWatcher.Errors:
+				log.Printf("File Watcher error: %v", err.Error())
 			}
 		}
 	}()

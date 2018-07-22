@@ -1,5 +1,0 @@
-JSONFileDir = "./test"
-ScanPeriod = 1 # in seconds
-ReceiverLat = 30.0
-ReceiverLon = 20.0
-ReceiverHeight = 9.0 # in meters
